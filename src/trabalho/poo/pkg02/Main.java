@@ -1,7 +1,5 @@
 package trabalho.poo.pkg02;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -15,11 +13,9 @@ static Scanner teclado = new Scanner(System.in);
             System.out.println("O que quer fazer?");
             System.out.println("1. Criar disciplina");
             System.out.println("2. Ver disciplinas criadas");
-            System.out.println("3. Criar aluno");
-            System.out.println("4. Ver alunos cadastrados");
-            System.out.println("5. Adicionar aluno em uma disciplina");
-            System.out.println("6. Criar gabarito de uma disciplina");
-            System.out.println("7. Gerar resultado de uma disciplina");
+            System.out.println("3. Adicionar aluno em uma disciplina");
+            System.out.println("4. Criar gabarito de uma disciplina");
+            System.out.println("5. Gerar resultado de uma disciplina");
             System.out.println("0. Sair");
             i = teclado.nextInt();
             switch(i){
@@ -30,13 +26,16 @@ static Scanner teclado = new Scanner(System.in);
                     verDisciplinas();
                     break;
                 case 3:
-                    criarAluno();
+                    adcAluno();
                     break;
                 case 4:
-                    verAlunos();
+                    adcGabarito();
                     break;
-                case 5:
-                    adcAluno();
+//                case 5:
+//                    gerarResultado();
+//                    break;
+                case 8:
+                    verAlunoTest();
                     break;
             }
         }while(i != 0);
@@ -45,12 +44,13 @@ static Scanner teclado = new Scanner(System.in);
      
    static ArrayList <Disciplina> disciplinas = new ArrayList<Disciplina>();
    static ArrayList <Aluno> alunos = new ArrayList<Aluno>();
+   
    static void criarDisciplina(){
      System.out.println("Qual o nome da disciplina?");
      teclado.nextLine();//LIMPA O BUFER DO TECLADO
      String str = teclado.nextLine();
-     
-     disciplinas.add(new Disciplina(str));
+     Disciplina d = new Disciplina(str);
+     disciplinas.add(d);
      File file = new File("disciplinas/"+str+".txt");
      
      try {
@@ -64,19 +64,6 @@ static Scanner teclado = new Scanner(System.in);
    static void verDisciplinas(){
        for(int i = 0; i<disciplinas.size(); i++){
            System.out.println(disciplinas.get(i).getNomeDisciplina()+"\n");
-       }
-   }
-   
-   static void criarAluno(){
-       System.out.println("Digite o nome do aluno:");
-       teclado.nextLine(); //LIMPAR O BUFFER DO TECLADO
-       String str = teclado.nextLine();
-       alunos.add(new Aluno(str));
-   }
-   
-   static void verAlunos(){
-       for(int i = 0; i<disciplinas.size(); i++){
-           System.out.println(alunos.get(i).getNome()+"\n");
        }
    }
 
@@ -94,26 +81,87 @@ static Scanner teclado = new Scanner(System.in);
        -> NÃO EXIBIR O ALUNO SE ELE JÁ TIVER SIDO ESCOLHIDO
        */
        
-       System.out.println("Adicionar um aluno já cadastrado? (1 para sim | 0 para não)");
-       int n = teclado.nextInt();
-       if(n == 1){
-           System.out.println("Escolha o aluno (pelo seu respectivo número)");
-           for(int i = 0; i<alunos.size(); i++){
-               System.out.println(i+"."+alunos.get(i).getNome());
-           }
-           int escolhaAluno = teclado.nextInt();
+       int i = 0;
+      System.out.println("Digite o nome do aluno:");
+       teclado.nextLine(); //LIMPAR O BUFFER DO TECLADO
+       String nomeAluno = teclado.nextLine();
+       alunos.add(new Aluno(nomeAluno));
            
            System.out.println("Digite o gabarito do aluno:");
            String gabarito = teclado.next();
-           
+           alunos.get(alunos.size()-1).setDisciplina(disciplinas.get(escolhaDisciplina).getNomeDisciplina());
+           alunos.get(alunos.size()-1).setGabarito(gabarito);
+
            try {
                FileWriter linha = new FileWriter("disciplinas/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt", true);
-               linha.write(gabarito+"\t"+alunos.get(escolhaAluno).getNome()+"\n");
+               linha.write(gabarito+"\t"+alunos.get(alunos.size()-1).getNome()+"\n");
                linha.close();
            } catch (IOException ex) {
                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
            }
-           
+   }
+   
+   static void adcGabarito(){
+       int i = 0;
+       System.out.println("Selecione a disciplina (pelo número)");
+       for (Disciplina d : disciplinas) {
+           System.out.println("["+i+"] "+d.getNomeDisciplina());
        }
+       int escolhaDisciplina = teclado.nextInt();
+       
+       System.out.println("Digite o Gabarito oficial");
+       String gabaritoOficial = teclado.next();
+       
+    try {
+        FileWriter linhaG = new FileWriter("gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+        linhaG.write(gabaritoOficial);
+        linhaG.close();
+    } catch (IOException ex) {
+        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+   }
+   
+/*   static void gerarResultado(){
+       int i = 0;
+       System.out.println("Selecione a disciplina (pelo número)");
+       for (Disciplina d : disciplinas) {
+           System.out.println("["+i+"] "+d.getNomeDisciplina());
+       }
+       int escolhaDisciplina = teclado.nextInt();
+       System.out.println("O gabarito oficial da prova está em gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+       
+    try {
+        FileWriter ordemAlfabetica = new FileWriter("resultados/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+"(Ordem alfabetica).txt");
+        FileReader gOfc = new FileReader("gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+        BufferedReader lerGOfc = new BufferedReader(gOfc);
+        
+        String linha = "";
+        linha = lerGOfc.readLine(); //GABARITO OFICIAL
+        gOfc.close();
+        
+        FileReader gDisc = new FileReader("disciplinas/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+        BufferedReader lerGDisc = new BufferedReader(gDisc);
+        String linhaDisc = "";
+        int nota = 0;
+        
+        while((linhaDisc = lerGDisc.readLine()) != null){
+            char[] linhaArray = linha.toCharArray();
+            char[] linhaDiscArray =  disciplinas.get(escolhaDisciplina).getNomeDisciplina().toCharArray();
+            for(int j = 0; i < linhaArray.length; j++){
+                if(linhaArray[j] == linhaDiscArray[j]){
+                nota ++;
+                }
+            }
+        }
+    } catch (IOException ex) {
+        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+   } */
+   
+    static void verAlunoTest(){
+        System.out.println(alunos.get(0).getNome());
+        System.out.println(alunos.get(0).getDisciplina());
+        System.out.println(alunos.get(0).getGabarito());
+        
    }
 }
