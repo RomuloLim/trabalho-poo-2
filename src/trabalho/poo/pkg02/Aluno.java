@@ -4,7 +4,8 @@ import java.util.ArrayList;
 public class Aluno {
     private String nome;
     private String disciplina;
-    private String gabarito;  
+    private String gabarito;
+    private int nota;
 
     public Aluno(String nome) {
         this.nome = nome;
@@ -12,9 +13,18 @@ public class Aluno {
 
     @Override
     public String toString() {
-        return "Aluno{" + "nome=" + nome + ", disciplina=" + disciplina + ", gabarito=" + gabarito + '}';
+        return "Aluno{" + "nome=" + nome + ", disciplina=" + disciplina + ", gabarito=" + gabarito + ", nota=" + nota + '}';
     }
 
+    public int getNota() {
+        return nota;
+    }
+
+    public void setNota(int nota) {
+        this.nota = nota;
+    }
+
+    
     
     public String getNome() {
         return nome;

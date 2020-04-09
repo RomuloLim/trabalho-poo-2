@@ -1,6 +1,8 @@
 package trabalho.poo.pkg02;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +33,9 @@ static Scanner teclado = new Scanner(System.in);
                 case 4:
                     adcGabarito();
                     break;
-//                case 5:
-//                    gerarResultado();
-//                    break;
+                case 5:
+                    gerarResultado();
+                    break;
                 case 8:
                     verAlunoTest();
                     break;
@@ -121,7 +123,7 @@ static Scanner teclado = new Scanner(System.in);
     }
    }
    
-/*   static void gerarResultado(){
+   static void gerarResultado(){
        int i = 0;
        System.out.println("Selecione a disciplina (pelo número)");
        for (Disciplina d : disciplinas) {
@@ -131,37 +133,58 @@ static Scanner teclado = new Scanner(System.in);
        System.out.println("O gabarito oficial da prova está em gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
        
     try {
-        FileWriter ordemAlfabetica = new FileWriter("resultados/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+"(Ordem alfabetica).txt");
+        FileWriter ordemAlfabetica = new FileWriter("resultados/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+"(Ordem alfabetica).txt", true);
         FileReader gOfc = new FileReader("gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
         BufferedReader lerGOfc = new BufferedReader(gOfc);
         
+        ArrayList<String> alunosOrdemAlfabetica = new ArrayList<>();
         String linha = "";
         linha = lerGOfc.readLine(); //GABARITO OFICIAL
         gOfc.close();
         
         FileReader gDisc = new FileReader("disciplinas/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
         BufferedReader lerGDisc = new BufferedReader(gDisc);
-        String linhaDisc = "";
-        int nota = 0;
-        
-        while((linhaDisc = lerGDisc.readLine()) != null){
-            char[] linhaArray = linha.toCharArray();
-            char[] linhaDiscArray =  disciplinas.get(escolhaDisciplina).getNomeDisciplina().toCharArray();
-            for(int j = 0; i < linhaArray.length; j++){
-                if(linhaArray[j] == linhaDiscArray[j]){
+        String linhaDisc;
+        int contador = 0;
+        int contador2 = 0;
+        linhaDisc = lerGDisc.readLine();
+        while(linhaDisc != null){
+            int nota = 0;
+            char linhaArray[] = linha.toCharArray();
+            char linhaDiscArray[] =  linhaDisc.toCharArray();
+            System.out.println(linhaArray.length);
+            for(int j = 0; j < linhaArray.length; j++){
+                if(linhaDiscArray[j] == linhaArray[j]){
                 nota ++;
+                    System.out.println(nota);
+                    System.out.println(linhaArray[j]);
+                    System.out.println(linhaDiscArray[j]);
                 }
             }
+            if (alunos.get(contador).getDisciplina() == disciplinas.get(escolhaDisciplina).getNomeDisciplina()) {
+            alunos.get(contador).setNota(nota);
+            alunosOrdemAlfabetica.add(alunos.get(contador).getNome()+": "+alunos.get(contador).getNota());
+            }
+            Collections.sort(alunosOrdemAlfabetica);
+            contador++;
+            linhaDisc = lerGDisc.readLine();
         }
+        
+        for(int j = 0; j < alunosOrdemAlfabetica.size(); j++){
+        ordemAlfabetica.write(alunosOrdemAlfabetica.get(j)+"\n");
+        }
+        ordemAlfabetica.close();
+        
+        
     } catch (IOException ex) {
         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     }
-   } */
+   }
    
     static void verAlunoTest(){
         System.out.println(alunos.get(0).getNome());
         System.out.println(alunos.get(0).getDisciplina());
         System.out.println(alunos.get(0).getGabarito());
-        
+        System.out.println(alunos.get(0).getNota());
    }
 }
