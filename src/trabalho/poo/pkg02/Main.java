@@ -1,15 +1,14 @@
 package trabalho.poo.pkg02;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class Main {
 static Scanner teclado = new Scanner(System.in);
     public static void main(String[] args) {
+
         int i = -1;
         do{
             System.out.println("O que quer fazer?");
@@ -146,26 +145,36 @@ static Scanner teclado = new Scanner(System.in);
         BufferedReader lerGDisc = new BufferedReader(gDisc);
         String linhaDisc;
         int contador = 0;
-        int contador2 = 0;
         linhaDisc = lerGDisc.readLine();
         while(linhaDisc != null){
             int nota = 0;
             char linhaArray[] = linha.toCharArray();
             char linhaDiscArray[] =  linhaDisc.toCharArray();
             System.out.println(linhaArray.length);
+            int vcount = 0;
+            int fcount = 0;
             for(int j = 0; j < linhaArray.length; j++){
                 if(linhaDiscArray[j] == linhaArray[j]){
-                nota ++;
+                    nota ++;
                     System.out.println(nota);
                     System.out.println(linhaArray[j]);
                     System.out.println(linhaDiscArray[j]);
+                    if(linhaArray[j] == 'V'){
+                        vcount++;
+                    }
+                    if(linhaArray[j] == 'F'){
+                        fcount++;
+                    }
                 }
             }
-            if (alunos.get(contador).getDisciplina() == disciplinas.get(escolhaDisciplina).getNomeDisciplina()) {
-            alunos.get(contador).setNota(nota);
-            alunosOrdemAlfabetica.add(alunos.get(contador).getNome()+": "+alunos.get(contador).getNota());
+            if(vcount == 0 || fcount == 0){
+                nota = 0;
             }
-            Collections.sort(alunosOrdemAlfabetica);
+            if (alunos.get(contador).getDisciplina() == disciplinas.get(escolhaDisciplina).getNomeDisciplina()) {
+                alunos.get(contador).setNota(nota);
+                alunosOrdemAlfabetica.add(alunos.get(contador).getNome() + ": " + alunos.get(contador).getNota());
+            }
+            Collections.sort(alunosOrdemAlfabetica, Comparator.comparing(String::toLowerCase));
             contador++;
             linhaDisc = lerGDisc.readLine();
         }
@@ -179,6 +188,65 @@ static Scanner teclado = new Scanner(System.in);
     } catch (IOException ex) {
         Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
     }
+
+   try {
+       FileWriter notasDecrescente = new FileWriter("resultados/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+"(Notas descrescente).txt", true);
+       FileReader gOfc = new FileReader("gabaritos/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+       BufferedReader lerGOfc = new BufferedReader(gOfc);
+
+       ArrayList<String> alunosNotaDecrescente = new ArrayList<>();
+       String linha = "";
+       linha = lerGOfc.readLine(); //GABARITO OFICIAL
+       gOfc.close();
+
+       FileReader gDisc = new FileReader("disciplinas/"+disciplinas.get(escolhaDisciplina).getNomeDisciplina()+".txt");
+       BufferedReader lerGDisc = new BufferedReader(gDisc);
+       String linhaDisc;
+       int contador = 0;
+       linhaDisc = lerGDisc.readLine();
+       Collections.sort(alunos, (a, b) -> a.getNota() > b.getNota() ? 0 : 1);
+       while(linhaDisc != null){
+           int nota = 0;
+           char linhaArray[] = linha.toCharArray();
+           char linhaDiscArray[] =  linhaDisc.toCharArray();
+           System.out.println(linhaArray.length);
+           int vcount = 0;
+           int fcount = 0;
+           for(int j = 0; j < linhaArray.length; j++){
+               if(linhaDiscArray[j] == linhaArray[j]){
+                   nota ++;
+                   System.out.println(nota);
+                   System.out.println(linhaArray[j]);
+                   System.out.println(linhaDiscArray[j]);
+                   if(linhaArray[j] == 'V'){
+                       vcount++;
+                   }
+                   if(linhaArray[j] == 'F'){
+                       fcount++;
+                   }
+               }
+           }
+           if(vcount == 0 || fcount == 0){
+               nota = 0;
+           }
+           if (alunos.get(contador).getDisciplina() == disciplinas.get(escolhaDisciplina).getNomeDisciplina()) {
+               alunos.get(contador).setNota(nota);
+               alunosNotaDecrescente.add(alunos.get(contador).getNome()+": "+alunos.get(contador).getNota());
+           }
+
+           contador++;
+           linhaDisc = lerGDisc.readLine();
+       }
+
+       for(int j = 0; j < alunosNotaDecrescente.size(); j++){
+           notasDecrescente.write(alunosNotaDecrescente.get(j)+"\n");
+       }
+       notasDecrescente.close();
+
+
+   } catch (IOException ex) {
+       Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+   }
    }
    
     static void verAlunoTest(){
